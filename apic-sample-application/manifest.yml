@@ -1,0 +1,5 @@
+applications:
+- path: ./target/apic-sample-application.war
+  name: wellnr-apic-sample-application
+  memory: 256M
+  disk_quota: 256M

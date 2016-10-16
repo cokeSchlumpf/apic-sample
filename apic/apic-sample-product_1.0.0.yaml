@@ -1,0 +1,21 @@
+product: 1.0.0
+info:
+  name: apic-sample-product
+  title: apic-sample-product
+  version: 1.0.0
+visibility:
+  view:
+    type: public
+  subscribe:
+    type: authenticated
+plans:
+  default:
+    title: Default Plan
+    description: Default Plan
+    approval: false
+    rate-limit:
+      value: 100/hour
+      hard-limit: false
+apis:
+  apic-sample:
+    $ref: apic-sample.yaml

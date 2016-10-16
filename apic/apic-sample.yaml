@@ -1,0 +1,157 @@
+swagger: '2.0'
+info:
+  description: Discover REST APIs available within Liberty
+  version: 1.0.0
+  title: apic-sample
+  x-ibm-name: apic-sample
+host: $(catalog.host)
+tags:
+  - name: calculation-service
+  - name: about-service
+definitions:
+  CalculationResult:
+    type: object
+    required:
+      - operation
+      - result
+    properties:
+      operation:
+        type: string
+        xml:
+          name: opertion
+        example: add
+      result:
+        type: integer
+        format: int32
+        example: 10
+  CalculationRequest:
+    type: object
+    required:
+      - n1
+    properties:
+      n1:
+        type: integer
+        format: int32
+        example: 42
+      n2:
+        type: integer
+        format: int32
+        example: 13
+  About:
+    type: object
+    properties:
+      application:
+        type: string
+      version:
+        type: string
+paths:
+  /about:
+    get:
+      tags:
+        - about-service
+      operationId: about
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/About'
+          headers: {}
+  /calculation/add:
+    get:
+      tags:
+        - calculation-service
+      operationId: add_with_get
+      parameters:
+        - name: n1
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: n2
+          in: query
+          required: false
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/CalculationResult'
+          headers: {}
+    post:
+      tags:
+        - calculation-service
+      operationId: add
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CalculationRequest'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/CalculationResult'
+          headers: {}
+  /calculation/example:
+    get:
+      tags:
+        - calculation-service
+      operationId: example
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/CalculationRequest'
+          headers: {}
+x-ibm-configuration:
+  phase: realized
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  assembly:
+    execute:
+      - invoke:
+          description: Invoking back-end service
+          title: Invocation
+          target-url: >-
+            $(backend_host)/$(backend_basePath)$(api.operation.path)$(request.search)
+          timeout: 27
+  properties:
+    backend_basePath:
+      value: apic-sample-application/api
+      description: The base path of the application in the backend (without leading slash).
+      encoded: false
+    backend_host:
+      value: 'http://localhost:7080'
+      description: The Host of the actual API.
+      encoded: false
+  gateway: datapower-gateway
+  catalogs:
+    apic-sample-sandbox:
+      properties:
+        backend_basePath: api
+        backend_host: 'https://wellnr-apic-sample-application.mybluemix.net'
+basePath: /apic-sample/v1.0
+securityDefinitions:
+  clientSecretHeader:
+    type: apiKey
+    description: ''
+    in: header
+    name: X-IBM-Client-Secret
+  clientIdHeader:
+    description: ''
+    in: header
+    name: X-IBM-Client-Id
+    type: apiKey
+security:
+  - clientIdHeader: []
+    clientSecretHeader: []
+consumes:
+  - application/json
+produces:
+  - application/json
